@@ -1,6 +1,6 @@
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Random;
 import javax.swing.*;
 
@@ -22,7 +22,7 @@ public class WhacAMole {
     Random random = new Random();
     Timer setMoleTimer;
     Timer setPlantTimer;
-
+    int score = 0;
 
     public WhacAMole() {
         
@@ -59,6 +59,23 @@ public class WhacAMole {
             boardPanel.add(tile);
             tile.setFocusable(false);
             //tile.setIcon(moleIcon);
+            tile.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    JButton tile = (JButton)e.getSource();
+                    if(tile == currMoleTile){
+                        score += 10;
+                        textLabel.setText("Score: " + Integer.toString(score));
+                    }
+                    else if (tile == currPlantTile){
+                        textLabel.setText("Game Over!! Score: " + Integer.toString(score));
+                        setMoleTimer.stop();
+                        setPlantTimer.stop();
+                        for (int i = 0;  i< 9; i++){
+                            boards[i].setEnabled(false);
+                        }
+                    }
+                }
+            });
         }
 
         setMoleTimer = new Timer(1000, new ActionListener(){
@@ -69,12 +86,33 @@ public class WhacAMole {
                 }
                 int num = random.nextInt(9);
                 JButton tile = boards[num];
+
+                //make sure that the plan tile is not in confirm with the new tile for the mole
+                if(currPlantTile == tile) return;
+
                 currMoleTile = tile;
                 currMoleTile.setIcon(moleIcon);
             }
         });
 
+        setPlantTimer = new Timer(1500, new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(currPlantTile != null){
+                    currPlantTile.setIcon(null);
+                    currPlantTile = null;
+                }
+                int num = random.nextInt(9);
+                JButton tile = boards[num];
+
+                if(currMoleTile == tile) return;
+
+                currPlantTile = tile;
+                currPlantTile.setIcon(plantIcon);
+            }
+        });
+
         setMoleTimer.start();
+        setPlantTimer.start();
         frame.setVisible(true);
 
     }
