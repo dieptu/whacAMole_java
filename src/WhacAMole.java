@@ -1,4 +1,7 @@
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
 import javax.swing.*;
 
 public class WhacAMole {
@@ -11,9 +14,18 @@ public class WhacAMole {
     JPanel boardPanel = new JPanel();
     JButton[] boards = new JButton[9];
 
+    ImageIcon moleIcon;
+    ImageIcon plantIcon;
+    JButton currMoleTile;
+    JButton currPlantTile;
+
+    Random random = new Random();
+    Timer setMoleTimer;
+    Timer setPlantTimer;
+
 
     public WhacAMole() {
-        frame.setVisible(true);
+        
         frame.setSize(boardWidth, boardHeight);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
@@ -33,11 +45,37 @@ public class WhacAMole {
         //boardPanel.setBackground(Color.black);
         frame.add(boardPanel);
 
+        //plantIcon = new ImageIcon(getClass().getResource("./piranha.png"));
+        Image plantImg = new ImageIcon(getClass().getResource("./piranha.png")).getImage();
+        plantIcon = new ImageIcon(plantImg.getScaledInstance(150,150, java.awt.Image.SCALE_SMOOTH));
+
+        Image moleImg = new ImageIcon(getClass().getResource("./monty.png")).getImage();
+        moleIcon = new ImageIcon(moleImg.getScaledInstance(150,150, java.awt.Image.SCALE_SMOOTH));
+
+
         for (int i = 0; i<9 ; i++){
             JButton tile = new JButton();;
             boards[i] = tile;
             boardPanel.add(tile);
+            tile.setFocusable(false);
+            //tile.setIcon(moleIcon);
         }
+
+        setMoleTimer = new Timer(1000, new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(currMoleTile != null){
+                    currMoleTile.setIcon(null);
+                    currMoleTile = null;
+                }
+                int num = random.nextInt(9);
+                JButton tile = boards[num];
+                currMoleTile = tile;
+                currMoleTile.setIcon(moleIcon);
+            }
+        });
+
+        setMoleTimer.start();
+        frame.setVisible(true);
 
     }
     
